@@ -1,0 +1,94 @@
+[global]
+    # Modern window with smooth borders
+    width = 350
+    height = (0, 250)
+    offset = (15, 15)
+    origin = top-center
+    
+    # Subtle transparency and rounded corners
+    transparency = 5
+    corner_radius = 12
+    
+    # No separators for cleaner look
+    separator_height = 0
+    
+    # Generous padding for visual breathing room
+    padding = 16
+    horizontal_padding = 20
+    text_icon_padding = 16
+    
+    # Subtle border
+    frame_width = 1
+    frame_color = "#3c3836"
+    
+    # Modern typography
+    font = JetBrainsMono Nerd Font Medium 11
+    format = "<b>%s</b>\n<span size='small'>%b</span>"
+    alignment = left
+    vertical_alignment = center
+    
+    # Smooth behavior
+    stack_duplicates = true
+    hide_duplicate_count = true
+    show_indicators = no
+    ellipsize = end
+    
+    # Minimalist icons
+    icon_position = left
+    min_icon_size = 32
+    max_icon_size = 48
+    icon_path = /usr/share/icons/Adwaita/scalable/status/:/usr/share/icons/Adwaita/scalable/devices/:/usr/share/icons/hicolor/:/usr/share/pixmaps/
+    icon_theme = Papirus
+    enable_recursive_icon_lookup = true
+    
+    # Smooth interactions
+    mouse_left_click = close_current
+    mouse_middle_click = do_action, close_current  
+    mouse_right_click = close_all
+    
+    # History
+    sticky_history = yes
+    history_length = 50
+    
+    # Default colors
+    background = "#282828"
+    foreground = "#f5f5f5"
+
+# Information notifications - Soft blue tone
+[urgency_low]
+    frame_color = "#458588"
+    highlight = "#458588"
+    timeout = 6
+
+# Normal notifications - Elegant neutral tone  
+[urgency_normal]
+    frame_color = "#689d6a"
+    highlight = "#689d6a"
+    timeout = 8
+
+# Critical notifications - Warm but elegant accent
+[urgency_critical]
+    frame_color = "#d79921"
+    highlight = "#d79921"
+    timeout = 16
+
+# Specific rules for applications with cohesive design
+[discord]
+    appname = Discord
+    frame_color = "#b16286"
+    highlight = "#b16286"
+    timeout = 8
+
+[spotify]
+    appname = Spotify
+    frame_color = "#98971a"
+    highlight = "#98971a"
+    timeout = 6
+
+[volume]
+    summary = "*Volume*"
+    frame_color = "#458588"
+    highlight = "#458588"
+    timeout = 1
+    format = "<b>%s</b>\n%b"
+    alignment = center
