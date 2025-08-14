@@ -167,6 +167,17 @@ notify-send "Test" "Hola"
 2. Revisa las rutas de iconos en la config
 3. Prueba con otro tema de iconos
 
+## 🔄 Sincronización
+
+Para aplicar esta configuración desde el repositorio de dotfiles:
+
+```bash
+cd ~/dotfiles
+./sync.sh -s dunst
+```
+
+Esto copiará `config/dunst/` a `~/.config/dunst/` y reiniciará Dunst si ya está en ejecución.
+
 ### Problemas con la fuente
 1. Asegúrate de tener JetBrains Mono Nerd Font instalada
 2. Actualiza la caché de fuentes: `fc-cache -fv`

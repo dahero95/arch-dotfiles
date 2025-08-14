@@ -1,6 +1,6 @@
-Hyprland es un compositor Wayland dinámico con tiling automático que combina la eficiencia de un gestor de ventanas en mosaico con animaciones fluidas y efectos visuales modernos. Es altamente personalizable y está construido en C++ para un rendimiento óptimo.
-
 # 🏗️ Configuración de Hyprland
+
+Hyprland es un compositor Wayland dinámico con tiling automático que combina la eficiencia de un gestor de ventanas en mosaico con animaciones fluidas y efectos visuales modernos. Es altamente personalizable y está construido en C++ para un rendimiento óptimo.
 
 Configuración completa para Hyprland con temas, atajos de teclado, efectos y scripts personalizados.
 
@@ -162,3 +162,14 @@ hyprctl systeminfo
 - Algunas aplicaciones X11 pueden necesitar configuración adicional
 - Los scripts requieren permisos de ejecución
 - Revisa la wiki oficial para configuraciones avanzadas: https://wiki.hypr.land/
+
+## 🔄 Sincronización
+
+Para aplicar esta configuración desde el repositorio de dotfiles:
+
+```bash
+cd ~/dotfiles
+./sync.sh -s hyprland
+```
+
+Esto copiará `config/hypr/` a `~/.config/hypr/` y, si Hyprland está corriendo, recargará la configuración automáticamente.

@@ -1,6 +1,6 @@
-Rofi es un lanzador de aplicaciones, menú de energía y switcher de ventanas altamente personalizable para entornos gráficos en Linux. Permite buscar y ejecutar aplicaciones, cambiar entre ventanas, ejecutar comandos, navegar archivos y más, todo con una interfaz rápida y adaptable a cualquier estilo visual.
-
 # Rofi Configuración y Temas
+
+Rofi es un lanzador de aplicaciones, menú de energía y switcher de ventanas altamente personalizable para entornos gráficos en Linux. Permite buscar y ejecutar aplicaciones, cambiar entre ventanas, ejecutar comandos, navegar archivos y más, todo con una interfaz rápida y adaptable a cualquier estilo visual.
 
 Temas y scripts tomados de: https://github.com/adi1090x/rofi
 
@@ -71,3 +71,14 @@ bind = SUPER, F12, exec, ~/.config/rofi/scripts/powermenu.sh 1 2
 ```
 
 Cambia la ruta y los argumentos según el tipo y estilo que prefieras.
+
+## 🔄 Sincronización
+
+Para aplicar esta configuración desde el repositorio de dotfiles:
+
+```bash
+cd ~/dotfiles
+./sync.sh -s rofi
+```
+
+Esto copiará `config/rofi/` a `~/.config/rofi/`.

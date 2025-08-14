@@ -23,11 +23,18 @@ sudo pacman -S sddm qt5 qt5-quickcontrols qt5-graphicaleffects
    sudo pacman -S sddm
    ```
 
-2. **Copia o enlaza los temas:**
-   El script de instalación (`install.sh`) ya enlaza automáticamente los temas de `themes/sddm/` a `/usr/share/sddm/themes/`.
-   Si lo haces manualmente:
+2. **Sincroniza con el script principal:**
    ```bash
-   sudo ln -sfn ~/dotfiles/themes/sddm/<nombre_del_tema> /usr/share/sddm/themes/<nombre_del_tema>
+   cd ~/dotfiles
+   ./sync.sh -s sddm
+   ```
+   Esto copiará `config/sddm/sddm.conf` a `/etc/sddm.conf` (requiere sudo) y los temas desde `themes/sddm/` a `/usr/share/sddm/themes/`.
+
+   Si prefieres hacerlo manualmente:
+   ```bash
+   sudo cp ~/dotfiles/config/sddm/sddm.conf /etc/sddm.conf
+   sudo mkdir -p /usr/share/sddm/themes
+   sudo cp -r ~/dotfiles/themes/sddm/* /usr/share/sddm/themes/
    ```
 
 3. **Configura el tema en `sddm.conf`:**
@@ -57,7 +64,7 @@ chmod +x test_theme.sh  # Solo la primera vez
 
 ## ℹ️ Notas
 - El autologin está desactivado por defecto por seguridad. Si lo necesitas, descomenta y edita la sección `[Autologin]` en `sddm.conf`.
-- Si ya tienes un `sddm.conf` en `/etc/`, el script de instalación hará un backup antes de reemplazarlo.
+- Si ya tienes un `sddm.conf` en `/etc/`, el script no sobreescribe si no hay cambios; puedes hacer backup manual si lo prefieres.
 - Los temas deben estar en `/usr/share/sddm/themes/` para que SDDM los detecte correctamente.
 
 ---

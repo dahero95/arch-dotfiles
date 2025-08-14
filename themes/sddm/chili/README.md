@@ -15,6 +15,13 @@ Chili for SDDM is the desktop environment *independent* adaption of my chili log
 
 ### Installing the theme
 
+This repository includes this theme already. To install it via the dotfiles sync script, use:
+```
+cd ~/dotfiles
+./sync.sh -s sddm
+```
+This copies the theme into `/usr/share/sddm/themes/chili` and updates `/etc/sddm.conf` if needed. For manual installation instead, you can still follow the original upstream instructions below.
+
 [Download the tar archive from openDesktop](https://www.opendesktop.org/p/1240784) and extract the contents to the theme directory of SDDM *(change the path for the downloaded file if necessary)*:
 ```
 $ sudo tar -xzvf ~/Downloads/sddm-chili.tar.gz -C /usr/share/sddm/themes

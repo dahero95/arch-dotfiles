@@ -83,7 +83,7 @@ El script utiliza dos métodos para detectar cambios según el tipo de component
 | **Waybar** | Reinicia el proceso |
 | **Dunst** | Reinicia y envía notificación de prueba |
 | **Fonts** | Actualiza cache con `fc-cache` |
-| **Rofi** | Información sobre configuración |
+| **Rofi** | Muestra el launcher |
 | **Themes** | Instrucciones de aplicación manual |
 | **SDDM** | Información sobre reinicio requerido |
 | **Ghostty** | Confirmación de actualización |
