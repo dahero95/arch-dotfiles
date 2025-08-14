@@ -2,11 +2,11 @@
 # ~/.config/hypr/scripts/screenshot.sh
 
 # Create Pictures directory if it doesn't exist
-mkdir -p ~/Pictures
+mkdir -p ~/Pictures/Screenshots
 
 # Generate filename with timestamp
 FILENAME="screenshot-$(date +%Y%m%d-%H%M%S).png"
-FILEPATH="$HOME/Pictures/$FILENAME"
+FILEPATH="$HOME/Pictures/Screenshots/$FILENAME"
 
 case $1 in
     "full")
