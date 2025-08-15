@@ -44,7 +44,7 @@ show_help() {
     echo "  -h                   Muestra esta ayuda"
     echo ""
     echo -e "${YELLOW}Componentes disponibles:${NC}"
-    echo "  hyprland, waybar, rofi, dunst, ghostty, themes, fonts"
+    echo "  hyprland, hypridle, waybar, rofi, dunst, ghostty, themes, fonts"
     echo ""
     echo -e "${YELLOW}Ejemplos:${NC}"
     echo "  $0 -s hyprland       # Sincroniza solo Hyprland si hay cambios"
@@ -232,11 +232,26 @@ post_sync_actions() {
                 hyprctl reload &>/dev/null || true
             fi
             ;;
+        hypridle)
+            if pgrep hypridle &> /dev/null; then
+                log "ACTION" "Reiniciando Hypridle..."
+                pkill hypridle
+                sleep 1
+            fi
+            log "ACTION" "Iniciando Hypridle..."
+            nohup hypridle -c ~/.config/hypridle/hypridle.conf > /dev/null 2>&1 &
+            sleep 2
+            if pgrep hypridle &> /dev/null; then
+                log "INFO" "Hypridle iniciado correctamente"
+            else
+                log "WARN" "Hypridle no se pudo iniciar - verificar configuración"
+            fi
+            ;;
         waybar)
             if pgrep waybar &> /dev/null; then
                 log "ACTION" "Reiniciando Waybar..."
                 pkill waybar
-                hyprctl dispatch exec "waybar -c ~/.config/waybar/config.jsonc -s ~/.config/waybar/style.css" &>/dev/null &
+                hyprctl dispatch exec "waybar -c ~/.config/waybar/config.jsonc -s ~/.config/waybar/style.css" 1>/dev/null &
             fi
             ;;
         dunst)
@@ -269,6 +284,10 @@ post_sync_actions() {
 sync_hyprland() {
     sync_component "hyprland" "$DOTFILES_DIR/config/hypr" "$CONFIG_DIR/hypr" "Hyprland"
     sync_face_icon
+}
+
+sync_hypridle() {
+    sync_component "hypridle" "$DOTFILES_DIR/config/hypridle" "$CONFIG_DIR/hypridle" "Hypridle"
 }
 
 sync_waybar() {
@@ -342,6 +361,7 @@ sync_all() {
     log "INFO" "Iniciando sincronización completa..."
     
     sync_hyprland
+    sync_hypridle
     sync_waybar
     sync_rofi
     sync_dunst
@@ -388,6 +408,7 @@ check_dependencies
 if [ "$MODE_SYNC" = true ] && [ -n "$SPECIFIC_COMPONENT" ]; then
     case $SPECIFIC_COMPONENT in
         hyprland) sync_hyprland ;;
+        hypridle) sync_hypridle ;;
         waybar) sync_waybar ;;
         rofi) sync_rofi ;;
         dunst) sync_dunst ;;
@@ -397,7 +418,7 @@ if [ "$MODE_SYNC" = true ] && [ -n "$SPECIFIC_COMPONENT" ]; then
         sddm) sync_sddm ;;
         *)
             log "ERROR" "Componente desconocido: $SPECIFIC_COMPONENT"
-            echo "Componentes disponibles: hyprland, waybar, rofi, dunst, ghostty, themes, fonts, sddm"
+            echo "Componentes disponibles: hyprland, hypridle, waybar, rofi, dunst, ghostty, themes, fonts, sddm"
             exit 1
             ;;
     esac
