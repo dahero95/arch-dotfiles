@@ -3,7 +3,7 @@
 Configuración personal para un escritorio moderno en Wayland con Hyprland. Incluye sincronización inteligente de dotfiles, componentes modulares y una instalación rápida.
 
 ## ✨ Características
-- Hyprland + Waybar + Rofi + Dunst + Ghostty + Hyprlock
+- Hyprland + Waybar + Rofi + Dunst + Ghostty + Hyprlock + Hypridle
 - Sincronización selectiva de dotfiles con firmas SHA256 y timestamps
 - Estructura modular por componente (cada uno con su propio README)
 - Temas GTK, SDDM y fuentes Nerd
@@ -12,7 +12,7 @@ Configuración personal para un escritorio moderno en Wayland con Hyprland. Incl
 - Arch Linux (o derivado)
 - Paquetes base recomendados:
    ```bash
-   sudo pacman -S --needed devel hyprland hyprlock waybar rofi dunst ghostty thunar playerctl grim slurp noto-fonts-emoji noto-fonts ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols ttf-montserrat papirus-icon-theme zsh git curl
+   sudo pacman -S --needed devel hyprland hyprlock hypridle waybar rofi dunst ghostty thunar playerctl grim slurp noto-fonts-emoji noto-fonts ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols ttf-montserrat papirus-icon-theme zsh git curl
    ```
 
 ## 🚀 Instalación rápida
@@ -38,6 +38,7 @@ echo 'eval "$(starship init zsh)"' >> ~/.zshrc
 ## 📦 Componentes
 Cada componente tiene su propio README dentro de su carpeta:
 - Hyprland: `config/hypr/`
+- Hypridle: `config/hypridle/`
 - Waybar: `config/waybar/`
 - Rofi: `config/rofi/`
 - Dunst: `config/dunst/`
@@ -51,6 +52,7 @@ Cada componente tiene su propio README dentro de su carpeta:
 dotfiles/
 ├── config/
 │   ├── hypr/
+│   ├── hypridle/
 │   ├── waybar/
 │   ├── rofi/
 │   ├── dunst/
