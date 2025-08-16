@@ -11,6 +11,7 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_DIR="$HOME/.config"
 FONTS_DIR="$HOME/.local/share/fonts"
 THEMES_DIR="$HOME/.themes"
+ICONS_DIR="$HOME/.local/share/icons"
 SIGNATURES_DIR="$DOTFILES_DIR/.signatures"
 PYTHON_HELPER="$DOTFILES_DIR/sync_helper.py"
 
@@ -44,7 +45,7 @@ show_help() {
     echo "  -h                   Muestra esta ayuda"
     echo ""
     echo -e "${YELLOW}Componentes disponibles:${NC}"
-    echo "  hyprland, hypridle, waybar, rofi, dunst, ghostty, themes, fonts"
+    echo "  hyprland, hypridle, hyprcursor, waybar, rofi, dunst, ghostty, themes, fonts, icons"
     echo ""
     echo -e "${YELLOW}Ejemplos:${NC}"
     echo "  $0 -s hyprland       # Sincroniza solo Hyprland si hay cambios"
@@ -94,7 +95,7 @@ has_changes() {
     fi
     
     # Para fonts y themes usamos fecha de modificación por performance
-    if [[ "$component" == "fonts" || "$component" == "themes" ]]; then
+    if [[ "$component" == "fonts" || "$component" == "themes" || "$component" == "icons" ]]; then
         check_modification_time "$component" "$source_dir"
     else
         SIGNATURES_DIR="$SIGNATURES_DIR" python3 "$PYTHON_HELPER" check "$component" "$source_dir"
@@ -143,7 +144,7 @@ save_signatures() {
     local component="$1"
     local source_dir="$2"
     
-    if [[ "$component" == "fonts" || "$component" == "themes" ]]; then
+    if [[ "$component" == "fonts" || "$component" == "themes" || "$component" == "icons" ]]; then
         # Guardar timestamp (epoch time)
         date +%s > "$SIGNATURES_DIR/${component}.timestamp"
     else
@@ -193,7 +194,7 @@ sync_component() {
     log "ACTION" "Sincronizando $display_name..."
     
     # Mostrar archivos que cambiaron (solo para componentes con firmas)
-    if [[ "$component" != "fonts" && "$component" != "themes" && "$MODE_REPLACE" = false ]]; then
+    if [[ "$component" != "fonts" && "$component" != "themes" && "$component" != "icons" && "$MODE_REPLACE" = false ]]; then
         local changed_files
         changed_files=$(SIGNATURES_DIR="$SIGNATURES_DIR" python3 "$PYTHON_HELPER" changes "$component" "$source_dir")
         if [ -n "$changed_files" ]; then
@@ -271,6 +272,9 @@ post_sync_actions() {
             log "ACTION" "Actualizando cache de fuentes..."
             fc-cache -f &>/dev/null
             ;;
+        icons)
+            log "INFO" "Temas de cursores instalados"
+            ;;
         themes)
             log "INFO" "Temas instalados (aplicar manualmente desde configuración)"
             ;;
@@ -288,6 +292,10 @@ sync_hyprland() {
 
 sync_hypridle() {
     sync_component "hypridle" "$DOTFILES_DIR/config/hypridle" "$CONFIG_DIR/hypridle" "Hypridle"
+}
+
+sync_hyprcursor() {
+    sync_component "hyprcursor" "$DOTFILES_DIR/config/hyprcursor" "$CONFIG_DIR/hyprcursor" "Hyprcursor"
 }
 
 sync_waybar() {
@@ -313,6 +321,10 @@ sync_themes() {
 
 sync_fonts() {
     sync_component "fonts" "$DOTFILES_DIR/fonts" "$FONTS_DIR" "Fuentes"
+}
+
+sync_icons() {
+    sync_component "icons" "$DOTFILES_DIR/icons" "$ICONS_DIR" "Iconos de cursor"
 }
 
 sync_sddm() {
@@ -362,12 +374,14 @@ sync_all() {
     
     sync_hyprland
     sync_hypridle
+    sync_hyprcursor
     sync_waybar
     sync_rofi
     sync_dunst
     sync_ghostty
     sync_themes
     sync_fonts
+    sync_icons
     sync_sddm
     
     log "INFO" "Sincronización completa terminada"
@@ -409,16 +423,18 @@ if [ "$MODE_SYNC" = true ] && [ -n "$SPECIFIC_COMPONENT" ]; then
     case $SPECIFIC_COMPONENT in
         hyprland) sync_hyprland ;;
         hypridle) sync_hypridle ;;
+        hyprcursor) sync_hyprcursor ;;
         waybar) sync_waybar ;;
         rofi) sync_rofi ;;
         dunst) sync_dunst ;;
         ghostty) sync_ghostty ;;
         themes) sync_themes ;;
         fonts) sync_fonts ;;
+        icons) sync_icons ;;
         sddm) sync_sddm ;;
         *)
             log "ERROR" "Componente desconocido: $SPECIFIC_COMPONENT"
-            echo "Componentes disponibles: hyprland, hypridle, waybar, rofi, dunst, ghostty, themes, fonts, sddm"
+            echo "Componentes disponibles: hyprland, hypridle, hyprcursor, waybar, rofi, dunst, ghostty, themes, fonts, icons, sddm"
             exit 1
             ;;
     esac
