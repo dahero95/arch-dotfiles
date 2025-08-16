@@ -1,88 +1,231 @@
 {
+    // ---------------------------------------------------------------
+    // https://github.com/Alexays/Waybar/wiki/Configuration#bar-config
+    // Icons: https://www.nerdfonts.com/cheat-sheet
+    // Font Awesome: https://fontawesome.com/icons?d=gallery&m=free
+    // ---------------------------------------------------------------
     "layer": "top",
     "position": "top",
-    "height": 28,
-    "spacing": 4,
-    "modules-left": ["hyprland/workspaces"],
-    "modules-center": ["hyprland/window"],
-    "modules-right": ["tray", "pulseaudio", "network", "cpu", "memory", "clock", "custom/power"],
-    
+    "height": 34,
+    "spacing": 0,
+    // "margin": "6 6 4 6",
+    "mode": "dock",
+    // "reload_style_on_change": true,
+    // "include": [
+    // 	"~/.config/waybar/default-modules.json"
+    // ],
+    "modules-left": [
+        "hyprland/workspaces"
+    ],
+    "modules-center": [
+        "clock",
+        "mpris"
+    ],
+    "modules-right": [
+        "tray",
+        "idle_inhibitor",
+        "cpu",
+        "temperature",
+        "memory",
+        "disk",
+        "group/audio",
+        "network",
+        "custom/power"
+    ],
+    // ---------------------------------------------------------------
+    // https://github.com/Alexays/Waybar/wiki/Module:-Hyprland
+    // ---------------------------------------------------------------
     "hyprland/workspaces": {
-        "disable-scroll": true,
-        "all-outputs": true,
+        "format": "{windows}",
         "on-click": "activate",
-        "format": "{icon}",
-        "format-icons": {
-            "1": "1",
-            "2": "2", 
-            "3": "3",
-            "4": "4",
-            "5": "5",
-            "6": "6",
-            "7": "7",
-            "8": "8",
-            "9": "9",
-            "10": "10",
-            "urgent": "",
-            "focused": "",
-            "default": ""
+        "format-window-separator": "  ",
+        "workspace-taskbar": {
+            "enable": true,
+            "update-active-window": true,
+            "format": "{icon}",
+            "icon-size": 18
+            // "on-click-window": "${SCRIPTS}/focus-window.sh {address} {button}"
         }
     },
-    
-    "hyprland/window": {
-        "format": "{}",
-        "max-length": 50
+    // ---------------------------------------------------------------
+    // https://github.com/Alexays/Waybar/wiki/Module:-Clock
+    // ---------------------------------------------------------------
+    "clock": {
+        "format": "{:%a %e - %I:%M}",
+        "format-alt": "{:%a %e %b %Y - %I:%M %p}",
+        "tooltip-format": "<tt><small>{calendar}</small></tt>",
+        "calendar": {
+            "mode": "month",
+            "on-scroll": 1,
+            "mode-mon-col": 3,
+            "format": {
+                "months": "<b>{}</b>",
+                "weekdays": "<b>{}</b>",
+                "today": "<span color='#CF4C4C'><b><u>{}</u></b></span>"
+            }
+        },
+        "actions": {
+            "on-click-right": "mode",
+            "on-scroll-left": "shift_up",
+            "on-scroll-right": "shift_down"
+        }
     },
-    
+    // ---------------------------------------------------------------
+    // https://github.com/Alexays/Waybar/wiki/Module:-MPRIS
+    // ---------------------------------------------------------------
+    "mpris": {
+        "format": "{player_icon}  {title}",
+        "format-paused": "{status_icon} {title}",
+        "player-icons": {
+            "spotify": " ",
+            "chromium": " ",
+            "default": " "
+        },
+        "status-icons": {
+            "paused": " "
+        },
+        "on-click": "playerctl play-pause",
+        "on-click-right": "playerctl next",
+        "on-scroll-left": "playerctl previous",
+        "on-scroll-right": "playerctl next",
+        "tooltip-format": "{artist} - {album}",
+        "max-length": 26,
+        "scroll-step": 1
+    },
+    // ---------------------------------------------------------------
+    // https://github.com/Alexays/Waybar/wiki/Module:-Tray
+    // ---------------------------------------------------------------
     "tray": {
         "spacing": 10
     },
-    
-    "clock": {
-        "format": "{:%H:%M}",
-        "format-alt": "{:%Y-%m-%d %H:%M:%S}",
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+    // ---------------------------------------------------------------
+    // https://github.com/Alexays/Waybar/wiki/Module:-Idle-Inhibitor
+    // ---------------------------------------------------------------
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "󰈈",
+            "deactivated": "󰈉"
+        },
+        "tooltip": true,
+        "tooltip-format-activated": "Idle inhibitor ON - Screen won't lock",
+        "tooltip-format-deactivated": "Idle inhibitor OFF - Screen will lock in 5min"
     },
-    
+    // ---------------------------------------------------------------
+    // https://github.com/Alexays/Waybar/wiki/Module:-Idle-Inhibitor
+    // ---------------------------------------------------------------
     "cpu": {
+        "interval": 15,
         "format": "{usage}% ",
-        "tooltip": false
+        "tooltip": true,
+        "states": {
+            "warning": 60,
+            "critical": 85
+        }
     },
-    
+    // ---------------------------------------------------------------
+    // https://github.com/Alexays/Waybar/wiki/Module:-Temperature
+    // ---------------------------------------------------------------
+    "temperature": {
+        "interval": 15,
+        "hwmon-path": "/sys/devices/pci0000:00/0000:00:08.1/0000:0a:00.0/hwmon/hwmon1/temp1_input", // CPU temperature
+        "critical-threshold": 80,
+        "format": "{temperatureC}°C "
+    },
+    // ---------------------------------------------------------------
+    // https://github.com/Alexays/Waybar/wiki/Module:-Memory
+    // ---------------------------------------------------------------
     "memory": {
-        "format": "{}% "
+        "interval": 30,
+        "format": "{}% ",
+        "tooltip-format": "Used: {used:0.1f} GB  -  Available: {avail:0.1f} GB",
+        "states": {
+            "warning": 80,
+            "critical": 95
+        }
     },
-    
-    "network": {
-        "format-wifi": "{essid} ",
-        "format-ethernet": "{ipaddr}/{cidr} ",
-        "tooltip-format": "{ifname} via {gwaddr}",
-        "format-linked": "{ifname} (No IP)",
-        "format-disconnected": "Disconnected ⚠",
-        "format-alt": "{ifname}: {ipaddr}/{cidr}"
+    // ---------------------------------------------------------------
+    // https://github.com/Alexays/Waybar/wiki/Module:-Memory
+    // ---------------------------------------------------------------
+    "disk": {
+        "interval": 30,
+        "format": "{percentage_used}% ",
+        "path": "/home",
+        "tooltip-format": "{used} used out of {total} on {path}",
+        "states": {
+            "warning": 80,
+            "critical": 95
+        }
     },
-    
+    "group/audio": {
+        "orientation": "horizontal",
+        "drawer": {
+            "click-to-reveal": false,
+            "transition-duration": 600
+        },
+        "modules": [
+            "pulseaudio",
+            "pulseaudio/slider"
+        ]
+    },
+    // ---------------------------------------------------------------
+    // https://github.com/Alexays/Waybar/wiki/Module:-PulseAudio
+    // ---------------------------------------------------------------
     "pulseaudio": {
         "format": "{volume}% {icon}",
-        "format-bluetooth": "{volume}% {icon}",
-        "format-bluetooth-muted": " {icon}",
-        "format-muted": " ",
+        "format-muted": "",
         "format-icons": {
             "headphone": "",
-            "hands-free": "",
-            "headset": "",
-            "phone": "",
-            "portable": "",
+            "hands-free": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
             "car": "",
-            "default": ["", "", ""]
+            "default": [
+                "",
+                "",
+                "",
+                "",
+                "󰗅"
+            ]
         },
-        "on-click": "pavucontrol"
+        "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+        "on-click-right": "pavucontrol",
+        "scroll-step": 2,
+        "states": {
+            "normal": 60,
+            "warning": 80,
+            "critical": 120
+        },
+        "max-volume": 90
     },
-    
+    "pulseaudio/slider": {
+        "min": 0,
+        "max": 60,
+        "orientation": "horizontal"
+    },
+    // ---------------------------------------------------------------
+    // https://github.com/Alexays/Waybar/wiki/Module:-Network
+    // ---------------------------------------------------------------
+    "network": {
+        "interval": 30,
+        "format-wifi": "{signalStrength}% {icon}",
+        "format-ethernet": "{ipaddr}/{cidr} 󰈀",
+        "tooltip-format": "{gwaddr} - {bandwidthDownBytes}  {bandwidthUpBytes} ",
+        "format-linked": "{ifname} (No IP)",
+        "format-disconnected": "󰤮",
+        "format-alt": "{essid} {icon}",
+        "format-icons": [
+            "󰤯",
+            "󰤟",
+            "󰤢",
+            "󰤥",
+            "󰤨"
+        ]
+    },
     "custom/power": {
-        "format": "⏻",
+        "format": "",
         "tooltip": false,
         "on-click": "~/.config/rofi/powermenu/type-2/powermenu.sh"
     }
-    
 }
