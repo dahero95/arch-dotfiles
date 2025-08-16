@@ -45,7 +45,7 @@ show_help() {
     echo "  -h                   Muestra esta ayuda"
     echo ""
     echo -e "${YELLOW}Componentes disponibles:${NC}"
-    echo "  hyprland, hypridle, hyprcursor, waybar, rofi, dunst, ghostty, themes, fonts, icons"
+    echo "  hyprland, hypridle, hyprcursor, hyprpaper, waybar, rofi, dunst, ghostty, themes, fonts, icons"
     echo ""
     echo -e "${YELLOW}Ejemplos:${NC}"
     echo "  $0 -s hyprland       # Sincroniza solo Hyprland si hay cambios"
@@ -248,6 +248,39 @@ post_sync_actions() {
                 log "WARN" "Hypridle no se pudo iniciar - verificar configuración"
             fi
             ;;
+        hyprpaper)
+            # Crear directorio de wallpapers si no existe
+            mkdir -p ~/Pictures/Wallpapers
+            
+            # Reiniciar hyprpaper si está corriendo
+            if pgrep hyprpaper &> /dev/null; then
+                log "ACTION" "Reiniciando Hyprpaper..."
+                pkill hyprpaper
+                sleep 1
+            fi
+            
+            # Iniciar hyprpaper con nueva configuración
+            if command -v hyprpaper &> /dev/null; then
+                log "ACTION" "Iniciando Hyprpaper..."
+                nohup hyprpaper -c ~/.config/hyprpaper/hyprpaper.conf > /dev/null 2>&1 &
+                sleep 2
+                
+                # Verificar si se inició correctamente
+                if pgrep hyprpaper &> /dev/null; then
+                    log "INFO" "Hyprpaper iniciado correctamente"
+                    
+                    # Si no hay wallpaper actual, descargar uno
+                    if [ ! -f ~/Pictures/Wallpapers/current.jpg ]; then
+                        log "ACTION" "Descargando wallpaper inicial..."
+                        ~/.config/hyprpaper/scripts/wallpaper_manager.sh download &>/dev/null || true
+                    fi
+                else
+                    log "WARN" "Hyprpaper no se pudo iniciar - verificar configuración"
+                fi
+            else
+                log "WARN" "Hyprpaper no está instalado"
+            fi
+            ;;
         waybar)
             if pgrep waybar &> /dev/null; then
                 log "ACTION" "Reiniciando Waybar..."
@@ -296,6 +329,10 @@ sync_hypridle() {
 
 sync_hyprcursor() {
     sync_component "hyprcursor" "$DOTFILES_DIR/config/hyprcursor" "$CONFIG_DIR/hyprcursor" "Hyprcursor"
+}
+
+sync_hyprpaper() {
+    sync_component "hyprpaper" "$DOTFILES_DIR/config/hyprpaper" "$CONFIG_DIR/hyprpaper" "Hyprpaper"
 }
 
 sync_waybar() {
@@ -375,6 +412,7 @@ sync_all() {
     sync_hyprland
     sync_hypridle
     sync_hyprcursor
+    sync_hyprpaper
     sync_waybar
     sync_rofi
     sync_dunst
@@ -424,6 +462,7 @@ if [ "$MODE_SYNC" = true ] && [ -n "$SPECIFIC_COMPONENT" ]; then
         hyprland) sync_hyprland ;;
         hypridle) sync_hypridle ;;
         hyprcursor) sync_hyprcursor ;;
+        hyprpaper) sync_hyprpaper ;;
         waybar) sync_waybar ;;
         rofi) sync_rofi ;;
         dunst) sync_dunst ;;
@@ -434,7 +473,7 @@ if [ "$MODE_SYNC" = true ] && [ -n "$SPECIFIC_COMPONENT" ]; then
         sddm) sync_sddm ;;
         *)
             log "ERROR" "Componente desconocido: $SPECIFIC_COMPONENT"
-            echo "Componentes disponibles: hyprland, hypridle, hyprcursor, waybar, rofi, dunst, ghostty, themes, fonts, icons, sddm"
+            echo "Componentes disponibles: hyprland, hypridle, hyprcursor, hyprpaper, waybar, rofi, dunst, ghostty, themes, fonts, icons, sddm"
             exit 1
             ;;
     esac

@@ -77,15 +77,16 @@ tooltip {
 
 #idle_inhibitor,
 #cpu,
-#disk,
-#custom-power {
-    padding: 0 12px 0 10px;
+#disk {
+    padding: 0 13px 0 10px;
 }
 
+#custom-wallpaper,
 #pulseaudio,
 #memory,
-#network {
-    padding: 0 13px 0 10px;
+#network,
+#custom-power {
+    padding: 0 14px 0 10px;
 }
 
 widget>#group-audio {
@@ -94,6 +95,7 @@ widget>#group-audio {
 }
 
 #tray:hover,
+#custom-wallpaper:hover,
 #idle_inhibitor:hover,
 #cpu:hover,
 #memory:hover,

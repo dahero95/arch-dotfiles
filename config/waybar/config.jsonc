@@ -6,7 +6,7 @@
     // ---------------------------------------------------------------
     "layer": "top",
     "position": "top",
-    "height": 34,
+    "height": 32,
     "spacing": 0,
     // "margin": "6 6 4 6",
     "mode": "dock",
@@ -24,6 +24,7 @@
     "modules-right": [
         "tray",
         "idle_inhibitor",
+        "custom/wallpaper",
         "cpu",
         "temperature",
         "memory",
@@ -223,9 +224,20 @@
             "󰤨"
         ]
     },
+    // ---------------------------------------------------------------
+    // https://github.com/Alexays/Waybar/wiki/Module:-Custom
+    // ---------------------------------------------------------------
     "custom/power": {
         "format": "",
         "tooltip": false,
         "on-click": "~/.config/rofi/powermenu/type-2/powermenu.sh"
+    },
+    "custom/wallpaper": {
+        "format": "",
+        "tooltip": false,
+        "on-click": "~/.config/hyprpaper/scripts/wallpaper_manager.sh new",
+        "on-click-right": "~/.config/hyprpaper/scripts/wallpaper_manager.sh random",
+        "on-scroll-left": "~/.config/hyprpaper/scripts/wallpaper_manager.sh prev",
+        "on-scroll-right": "~/.config/hyprpaper/scripts/wallpaper_manager.sh next"
     }
 }
