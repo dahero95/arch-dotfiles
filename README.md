@@ -3,16 +3,16 @@
 Configuración personal para un escritorio moderno en Wayland con Hyprland. Incluye sincronización inteligente de dotfiles, componentes modulares y una instalación rápida.
 
 ## ✨ Características
-- Hyprland + Waybar + Rofi + Dunst + Ghostty + Hyprlock + Hypridle
+- Hyprland + Waybar + Rofi + Dunst + Ghostty + Hyprlock + Hypridle + Hyprcursor
 - Sincronización selectiva de dotfiles con firmas SHA256 y timestamps
 - Estructura modular por componente (cada uno con su propio README)
-- Temas GTK, SDDM y fuentes Nerd
+- Temas GTK, SDDM, cursores y fuentes Nerd
 
 ## ⚙️ Requisitos
 - Arch Linux (o derivado)
 - Paquetes base recomendados:
    ```bash
-   sudo pacman -S --needed devel hyprland hyprlock hypridle waybar rofi dunst ghostty thunar playerctl grim slurp noto-fonts-emoji noto-fonts ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols ttf-montserrat papirus-icon-theme zsh git curl
+   sudo pacman -S --needed devel hyprland hyprlock hypridle hyprcursor waybar rofi dunst ghostty thunar playerctl grim slurp noto-fonts-emoji noto-fonts ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols ttf-montserrat papirus-icon-theme zsh git curl
    ```
 
 ## 🚀 Instalación rápida
@@ -39,6 +39,7 @@ echo 'eval "$(starship init zsh)"' >> ~/.zshrc
 Cada componente tiene su propio README dentro de su carpeta:
 - Hyprland: `config/hypr/`
 - Hypridle: `config/hypridle/`
+- Hyprcursor: `config/hyprcursor/`
 - Waybar: `config/waybar/`
 - Rofi: `config/rofi/`
 - Dunst: `config/dunst/`
@@ -46,6 +47,7 @@ Cada componente tiene su propio README dentro de su carpeta:
 - SDDM: `config/sddm/`
 - Temas (GTK y sddm): `themes/`
 - Fuentes: `fonts/`
+- Iconos de cursor: `icons/`
 
 ## 📁 Estructura
 ```
@@ -53,6 +55,7 @@ dotfiles/
 ├── config/
 │   ├── hypr/
 │   ├── hypridle/
+│   ├── hyprcursor/
 │   ├── waybar/
 │   ├── rofi/
 │   ├── dunst/
@@ -60,6 +63,7 @@ dotfiles/
 │   └── sddm/
 ├── fonts/
 ├── themes/
+├── icons/
 ├── sync.sh
 ├── SYNC_README.md
 └── .signatures/        # generado automáticamente
@@ -68,6 +72,7 @@ dotfiles/
 ## 🧩 Lo que hace `sync.sh`
 - Copia configuraciones a `~/.config/`
 - Instala fuentes en `~/.local/share/fonts/` y actualiza caché (`fc-cache`)
+- Instala iconos de cursor en `~/.local/share/icons/`
 - Copia temas GTK a `~/.themes/`
 - Copia SDDM: `config/sddm/sddm.conf` a `/etc/sddm.conf` y temas a `/usr/share/sddm/themes/` (requiere sudo)
 - Sincroniza `.face.icon` si existe

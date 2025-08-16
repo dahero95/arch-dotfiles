@@ -1,0 +1,27 @@
+# Bibata Cursor Theme Placeholder
+
+Para instalar el tema Bibata:
+
+1. **Opción 1 - Via AUR:**
+   ```bash
+   yay -S bibata-cursor-theme
+   ```
+
+2. **Opción 2 - Manual:**
+   - Descargar desde: https://github.com/ful1e5/Bibata_Cursor
+   - Extraer en este directorio: `dotfiles/icons/`
+   - Ejecutar: `./sync.sh -s icons`
+
+## Estructura esperada:
+```
+icons/
+├── Bibata-Modern-Classic/
+│   ├── cursors/
+│   └── index.theme
+├── Bibata-Modern-Ice/
+│   ├── cursors/
+│   └── index.theme
+└── ...
+```
+
+Una vez instalado, modificar `config/hyprcursor/hyprcursor.conf` para usar el tema deseado.
