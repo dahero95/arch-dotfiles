@@ -235,9 +235,9 @@
     "custom/wallpaper": {
         "format": "",
         "tooltip": false,
-        "on-click": "~/.config/hyprpaper/scripts/wallpaper_manager.sh new",
-        "on-click-right": "~/.config/hyprpaper/scripts/wallpaper_manager.sh random",
-        "on-scroll-left": "~/.config/hyprpaper/scripts/wallpaper_manager.sh prev",
-        "on-scroll-right": "~/.config/hyprpaper/scripts/wallpaper_manager.sh next"
+        "on-click": "~/.config/swww/scripts/wallpaper_manager.sh new",
+        "on-click-right": "~/.config/swww/scripts/wallpaper_manager.sh random",
+        "on-scroll-left": "~/.config/swww/scripts/wallpaper_manager.sh prev",
+        "on-scroll-right": "~/.config/swww/scripts/wallpaper_manager.sh next"
     }
 }
