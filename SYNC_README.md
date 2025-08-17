@@ -33,7 +33,7 @@ Un sistema avanzado de sincronización de dotfiles que detecta cambios usando fi
 | **hyprland** | Configuración del compositor Wayland | SHA256 |
 | **hypridle** | Daemon de inactividad | SHA256 |
 | **hyprcursor** | Configuración de cursor | SHA256 |
-| **hyprpaper** | Gestor de wallpapers | SHA256 |
+| **swww** | Gestor de wallpapers con efectos | SHA256 |
 | **waybar** | Barra de estado | SHA256 |
 | **rofi** | Lanzador de aplicaciones | SHA256 |
 | **dunst** | Sistema de notificaciones | SHA256 |
@@ -49,8 +49,8 @@ Un sistema avanzado de sincronización de dotfiles que detecta cambios usando fi
 # Sincronizar solo Hyprland si hay cambios
 ./sync.sh -s hyprland
 
-# Sincronizar solo hyprpaper (gestor de wallpapers)
-./sync.sh -s hyprpaper
+# Sincronizar solo swww (gestor de wallpapers)
+./sync.sh -s swww
 
 # Forzar reemplazo de todos los temas
 ./sync.sh -s themes -r
@@ -71,7 +71,7 @@ Un sistema avanzado de sincronización de dotfiles que detecta cambios usando fi
 
 El script utiliza dos métodos para detectar cambios según el tipo de componente:
 
-#### 1. **Componentes de configuración** (hyprland, hypridle, hyprcursor, hyprpaper, waybar, rofi, dunst, ghostty, sddm)
+#### 1. **Componentes de configuración** (hyprland, hypridle, hyprcursor, swww, waybar, rofi, dunst, ghostty, sddm)
 - ✅ Usa firmas **SHA256** almacenadas en `.signatures/`
 - ✅ Detecta archivos nuevos, modificados y eliminados
 - ✅ Muestra exactamente qué cambió
@@ -117,7 +117,7 @@ dotfiles/
 │   ├── hyprland.json         # SHA256 de archivos de Hyprland
 │   ├── hypridle.json         # SHA256 de archivos de Hypridle
 │   ├── hyprcursor.json       # SHA256 de archivos de Hyprcursor
-│   ├── hyprpaper.json        # SHA256 de archivos de Hyprpaper
+│   ├── swww.json             # SHA256 de archivos de SWWW
 │   ├── waybar.json           # SHA256 de archivos de Waybar
 │   ├── rofi.json             # SHA256 de archivos de Rofi
 │   ├── dunst.json            # SHA256 de archivos de Dunst
@@ -130,7 +130,7 @@ dotfiles/
     ├── hypr/
     ├── hypridle/
     ├── hyprcursor/
-    ├── hyprpaper/
+    ├── swww/
     ├── waybar/
     ├── rofi/
     ├── dunst/

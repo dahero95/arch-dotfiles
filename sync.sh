@@ -45,7 +45,7 @@ show_help() {
     echo "  -h                   Muestra esta ayuda"
     echo ""
     echo -e "${YELLOW}Componentes disponibles:${NC}"
-    echo "  hyprland, hypridle, hyprcursor, hyprpaper, waybar, rofi, dunst, ghostty, themes, fonts, icons"
+    echo "  hyprland, hypridle, hyprcursor, swww, waybar, rofi, dunst, ghostty, themes, fonts, icons"
     echo ""
     echo -e "${YELLOW}Ejemplos:${NC}"
     echo "  $0 -s hyprland       # Sincroniza solo Hyprland si hay cambios"
@@ -281,6 +281,46 @@ post_sync_actions() {
                 log "WARN" "Hyprpaper no está instalado"
             fi
             ;;
+        swww)
+            # Crear directorio de wallpapers si no existe
+            mkdir -p ~/Pictures/Wallpapers
+            
+            # Reiniciar swww daemon si está corriendo
+            if pgrep swww-daemon &> /dev/null; then
+                log "ACTION" "Reiniciando SWWW daemon..."
+                swww kill
+                sleep 1
+            fi
+            
+            # Iniciar swww daemon
+            if command -v swww &> /dev/null; then
+                log "ACTION" "Iniciando SWWW daemon..."
+                swww-daemon &>/dev/null &
+                sleep 2
+                
+                # Verificar si se inició correctamente
+                if pgrep swww-daemon &> /dev/null; then
+                    log "INFO" "SWWW daemon iniciado correctamente"
+                    
+                    # Si no hay wallpaper actual, descargar uno
+                    if [ ! -f ~/Pictures/Wallpapers/current.jpg ]; then
+                        log "ACTION" "Descargando wallpaper inicial..."
+                        ~/.config/swww/scripts/wallpaper_manager.sh new &>/dev/null || true
+                    else
+                        log "ACTION" "Aplicando wallpaper actual..."
+                        ~/.config/swww/scripts/wallpaper_manager.sh random &>/dev/null || true
+                    fi
+                else
+                    log "WARN" "SWWW daemon no se pudo iniciar - verificar instalación"
+                fi
+            else
+                log "WARN" "SWWW no está instalado. Instalar con: yay -S swww"
+            fi
+            ;;
+        hyprpaper)
+            log "WARN" "hyprpaper está deprecated. Usar 'swww' en su lugar"
+            log "INFO" "Para migrar: sync.sh -s swww"
+            ;;
         waybar)
             if pgrep waybar &> /dev/null; then
                 log "ACTION" "Reiniciando Waybar..."
@@ -331,8 +371,13 @@ sync_hyprcursor() {
     sync_component "hyprcursor" "$DOTFILES_DIR/config/hyprcursor" "$CONFIG_DIR/hyprcursor" "Hyprcursor"
 }
 
+sync_swww() {
+    sync_component "swww" "$DOTFILES_DIR/config/swww" "$CONFIG_DIR/swww" "SWWW"
+}
+
 sync_hyprpaper() {
-    sync_component "hyprpaper" "$DOTFILES_DIR/config/hyprpaper" "$CONFIG_DIR/hyprpaper" "Hyprpaper"
+    log "WARN" "hyprpaper está deprecated - usando swww en su lugar"
+    sync_swww
 }
 
 sync_waybar() {
@@ -412,7 +457,7 @@ sync_all() {
     sync_hyprland
     sync_hypridle
     sync_hyprcursor
-    sync_hyprpaper
+    sync_swww
     sync_waybar
     sync_rofi
     sync_dunst
@@ -462,6 +507,7 @@ if [ "$MODE_SYNC" = true ] && [ -n "$SPECIFIC_COMPONENT" ]; then
         hyprland) sync_hyprland ;;
         hypridle) sync_hypridle ;;
         hyprcursor) sync_hyprcursor ;;
+        swww) sync_swww ;;
         hyprpaper) sync_hyprpaper ;;
         waybar) sync_waybar ;;
         rofi) sync_rofi ;;
@@ -473,7 +519,7 @@ if [ "$MODE_SYNC" = true ] && [ -n "$SPECIFIC_COMPONENT" ]; then
         sddm) sync_sddm ;;
         *)
             log "ERROR" "Componente desconocido: $SPECIFIC_COMPONENT"
-            echo "Componentes disponibles: hyprland, hypridle, hyprcursor, hyprpaper, waybar, rofi, dunst, ghostty, themes, fonts, icons, sddm"
+            echo "Componentes disponibles: hyprland, hypridle, hyprcursor, swww, hyprpaper (deprecated), waybar, rofi, dunst, ghostty, themes, fonts, icons, sddm"
             exit 1
             ;;
     esac

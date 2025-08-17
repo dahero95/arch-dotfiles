@@ -3,7 +3,7 @@
 Configuración personal para un escritorio moderno en Wayland con Hyprland. Incluye sincronización inteligente de dotfiles, componentes modulares y una instalación rápida.
 
 ## ✨ Características
-- Hyprland + Waybar + Rofi + Dunst + Ghostty + Hyprlock + Hypridle + Hyprcursor + Hyprpaper
+- Hyprland + Waybar + Rofi + Dunst + Ghostty + Hyprlock + Hypridle + Hyprcursor + SWWW
 - Sincronización selectiva de dotfiles con firmas SHA256 y timestamps
 - Estructura modular por componente (cada uno con su propio README)
 - Temas GTK, SDDM, cursores y fuentes Nerd
@@ -13,7 +13,8 @@ Configuración personal para un escritorio moderno en Wayland con Hyprland. Incl
 - Arch Linux (o derivado)
 - Paquetes base recomendados:
    ```bash
-   sudo pacman -S --needed base-devel hyprland hyprpaper hyprlock hypridle hyprcursor waybar rofi dunst ghostty thunar playerctl grim slurp curl jq imagemagick noto-fonts-emoji noto-fonts ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols ttf-montserrat papirus-icon-theme zsh git curl
+   sudo pacman -S --needed base-devel hyprland hyprlock hypridle hyprcursor waybar rofi dunst ghostty thunar playerctl grim slurp curl jq imagemagick noto-fonts-emoji noto-fonts ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols ttf-montserrat papirus-icon-theme zsh git curl
+   yay -S swww
    ```
 
 ## 🚀 Instalación rápida
@@ -41,7 +42,7 @@ Cada componente tiene su propio README dentro de su carpeta:
 - Hyprland: `config/hypr/`
 - Hypridle: `config/hypridle/`
 - Hyprcursor: `config/hyprcursor/`
-- Hyprpaper: `config/hyprpaper/`
+- SWWW: `config/swww/`
 - Waybar: `config/waybar/`
 - Rofi: `config/rofi/`
 - Dunst: `config/dunst/`
@@ -58,7 +59,7 @@ dotfiles/
 │   ├── hypr/
 │   ├── hypridle/
 │   ├── hyprcursor/
-│   ├── hyprpaper/
+│   ├── swww/
 │   ├── waybar/
 │   ├── rofi/
 │   ├── dunst/
@@ -80,13 +81,13 @@ dotfiles/
 - Copia SDDM: `config/sddm/sddm.conf` a `/etc/sddm.conf` y temas a `/usr/share/sddm/themes/` (requiere sudo)
 - Sincroniza `.face.icon` si existe
 - Configura directorio de wallpapers en `~/Pictures/Wallpapers/`
-- Recarga/reenlaza servicios cuando aplica: Hyprland, Waybar, Dunst, Rofi, Hyprpaper
+- Recarga/reenlaza servicios cuando aplica: Hyprland, Waybar, Dunst, Rofi, SWWW
 
 ## 🎨 Personalización rápida
 - Rofi: `config/rofi/` (temas en `launchers/` y `powermenu/`)
 - Waybar: `config/waybar/config.jsonc` y `config/waybar/style.css`
 - Hyprland: `config/hypr/hyprland.conf`
-- Wallpapers: `~/.config/hyprpaper/scripts/wallpaper_manager.sh download`
+- Wallpapers: `~/.config/swww/scripts/wallpaper_manager.sh new`
 
 ## 🆘 Problemas comunes
 - Fuentes nuevas no aparecen: ejecutar `fc-cache -rv`
