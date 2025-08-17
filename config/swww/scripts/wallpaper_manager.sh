@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Hyprpaper Wallpaper Manager - Downloads and rotates wallpapers from Wallhaven
+# SWWW Wallpaper Manager - Downloads and rotates wallpapers from Wallhaven
 # Author: David
 # Date: $(date +%Y-%m-%d)
 
@@ -10,7 +10,7 @@ set -e
 WALLPAPER_DIR="$HOME/Pictures/Wallpapers"
 CURRENT_WALLPAPER="$WALLPAPER_DIR/current.jpg"
 WALLHAVEN_API="https://wallhaven.cc/api/v1/search"
-USER_AGENT="Hyprpaper-Manager/1.0"
+USER_AGENT="SWWW-Manager/1.0"
 
 # Colors for output
 RED='\033[0;31m'
@@ -36,7 +36,7 @@ log() {
 
 # Show help
 show_help() {
-    echo -e "${BLUE}🖼️  Hyprpaper Wallpaper Manager${NC}"
+    echo -e "${BLUE}🖼️  SWWW Wallpaper Manager${NC}"
     echo ""
     echo "Usage: $0 [options]"
     echo ""
@@ -48,6 +48,9 @@ show_help() {
     echo "  prev         Switch to the previous wallpaper"
     echo "  current      Show information about the current wallpaper"
     echo "  clean        Clean old wallpapers (keeps last 20)"
+    echo "  restart      Restart swww daemon (fixes buffer issues)"
+    echo "  config       Show current configuration from swww.conf"
+    echo "  test         Test wallpaper change with current settings"
     echo "  -h, --help   Show this help"
     echo ""
     echo -e "${YELLOW}Examples:${NC}"
@@ -62,18 +65,53 @@ show_help() {
 
 # Verify dependencies
 check_dependencies() {
-    local deps=("curl" "jq" "hyprctl")
+    local deps=("curl" "jq" "swww")
     for dep in "${deps[@]}"; do
         if ! command -v "$dep" &> /dev/null; then
             log "ERROR" "Missing dependency: $dep"
             case $dep in
                 "curl") echo "Instalar con: sudo pacman -S curl" ;;
                 "jq") echo "Install with: sudo pacman -S jq" ;;
-                "hyprctl") echo "hyprctl is provided by Hyprland" ;;
+                "swww") echo "Install with: yay -S swww" ;;
             esac
             exit 1
         fi
     done
+}
+
+# Check swww daemon status and clean up if needed
+check_swww_status() {
+    log "DEBUG" "Checking swww daemon status..."
+    
+    # Check if daemon is running but not responding
+    if pgrep swww-daemon > /dev/null; then
+        if ! swww query &>/dev/null; then
+            log "WARN" "Swww daemon is running but not responding, restarting..."
+            swww kill 2>/dev/null || true
+            sleep 2
+            swww-daemon &
+            sleep 3
+        fi
+    fi
+    
+    # Verify daemon is working
+    local retry_count=0
+    while ! swww query &>/dev/null && [ $retry_count -lt 5 ]; do
+        if [ $retry_count -eq 0 ]; then
+            log "DEBUG" "Starting swww daemon..."
+            swww-daemon &
+        fi
+        sleep 1
+        ((retry_count++))
+    done
+    
+    if [ $retry_count -eq 5 ]; then
+        log "ERROR" "Failed to start or connect to swww daemon"
+        return 1
+    fi
+    
+    log "DEBUG" "Swww daemon is ready"
+    return 0
 }
 
 # Create required directories
@@ -202,7 +240,71 @@ rotate_wallpaper() {
     apply_wallpaper "$target_wallpaper"
 }
 
-# Apply wallpaper using hyprctl
+# Read SWWW configuration from config file
+read_swww_config() {
+    local config_file="$HOME/.config/swww/swww.conf"
+    if [ -f "$config_file" ]; then
+        # Extract values from config file
+        SWWW_TRANSITION_TYPE=$(grep "^transition-type" "$config_file" | cut -d'=' -f2 | tr -d ' ')
+        SWWW_TRANSITION_DURATION=$(grep "^transition-duration" "$config_file" | cut -d'=' -f2 | tr -d ' ')
+        SWWW_TRANSITION_FPS=$(grep "^transition-fps" "$config_file" | cut -d'=' -f2 | tr -d ' ')
+        SWWW_TRANSITION_POS=$(grep "^transition-pos" "$config_file" | cut -d'=' -f2 | tr -d ' ')
+        SWWW_RESIZE=$(grep "^resize" "$config_file" | cut -d'=' -f2 | tr -d ' ')
+        
+        # Set defaults if not found
+        SWWW_TRANSITION_TYPE="${SWWW_TRANSITION_TYPE:-grow}"
+        SWWW_TRANSITION_DURATION="${SWWW_TRANSITION_DURATION:-1.5}"
+        SWWW_TRANSITION_FPS="${SWWW_TRANSITION_FPS:-60}"
+        SWWW_TRANSITION_POS="${SWWW_TRANSITION_POS:-0.5,0.5}"
+        SWWW_RESIZE="${SWWW_RESIZE:-crop}"
+    else
+        # Default values if config file doesn't exist
+        SWWW_TRANSITION_TYPE="grow"
+        SWWW_TRANSITION_DURATION="1.5"
+        SWWW_TRANSITION_FPS="60"
+        SWWW_TRANSITION_POS="0.5,0.5"
+        SWWW_RESIZE="crop"
+    fi
+    
+    log "DEBUG" "SWWW Config loaded - Type: $SWWW_TRANSITION_TYPE, Duration: $SWWW_TRANSITION_DURATION, FPS: $SWWW_TRANSITION_FPS"
+}
+
+# Configure transition effects for swww
+configure_transition() {
+    local effect_type="${1:-config}"
+    
+    case $effect_type in
+        "config")
+            # Use configuration from swww.conf
+            echo "--transition-type $SWWW_TRANSITION_TYPE --transition-duration $SWWW_TRANSITION_DURATION --transition-fps $SWWW_TRANSITION_FPS --transition-pos $SWWW_TRANSITION_POS --resize $SWWW_RESIZE"
+            ;;
+        "circle"|"circular")
+            echo "--transition-type grow --transition-pos 0.5,0.5 --transition-duration $SWWW_TRANSITION_DURATION --transition-fps $SWWW_TRANSITION_FPS --resize $SWWW_RESIZE"
+            ;;
+        "wave")
+            echo "--transition-type wave --transition-angle 45 --transition-duration $SWWW_TRANSITION_DURATION --transition-fps $SWWW_TRANSITION_FPS --resize $SWWW_RESIZE"
+            ;;
+        "fade")
+            echo "--transition-type fade --transition-duration $SWWW_TRANSITION_DURATION --transition-fps $SWWW_TRANSITION_FPS --resize $SWWW_RESIZE"
+            ;;
+        "wipe")
+            local directions=("left" "right" "top" "bottom")
+            local random_dir=${directions[$RANDOM % ${#directions[@]}]}
+            echo "--transition-type $random_dir --transition-duration $SWWW_TRANSITION_DURATION --transition-fps $SWWW_TRANSITION_FPS --resize $SWWW_RESIZE"
+            ;;
+        "random"|*)
+            local effects=("grow" "outer" "wipe" "wave" "fade" "left" "right")
+            local random_effect=${effects[$RANDOM % ${#effects[@]}]}
+            if [ "$random_effect" = "grow" ]; then
+                echo "--transition-type grow --transition-pos 0.5,0.5 --transition-duration $SWWW_TRANSITION_DURATION --transition-fps $SWWW_TRANSITION_FPS --resize $SWWW_RESIZE"
+            else
+                echo "--transition-type $random_effect --transition-duration $SWWW_TRANSITION_DURATION --transition-fps $SWWW_TRANSITION_FPS --resize $SWWW_RESIZE"
+            fi
+            ;;
+    esac
+}
+
+# Apply wallpaper using swww
 apply_wallpaper() {
     local wallpaper_path="$1"
     
@@ -211,30 +313,26 @@ apply_wallpaper() {
         return 1
     fi
     
-    log "ACTION" "Applying wallpaper..."
+    log "ACTION" "Applying wallpaper with transition effect..."
     
-    # Verificar si hyprpaper está corriendo
-    if ! pgrep hyprpaper > /dev/null; then
-        log "DEBUG" "Starting hyprpaper..."
-        nohup hyprpaper -c ~/.config/hyprpaper/hyprpaper.conf > /dev/null 2>&1 &
-        sleep 2
-    fi
-    
-    # STEP 1: Unload the current wallpaper (replicates the manual steps that worked)
-    log "DEBUG" "Unloading current wallpaper..."
-    hyprctl hyprpaper unload "$CURRENT_WALLPAPER" 2>/dev/null || true
-
-    # STEP 2: Preload the new wallpaper via the symlink
-    log "DEBUG" "Preloading wallpaper: $CURRENT_WALLPAPER"
-    if ! hyprctl hyprpaper preload "$CURRENT_WALLPAPER" 2>/dev/null; then
-        log "ERROR" "Error preloading wallpaper"
+    # Check and ensure swww daemon is ready
+    if ! check_swww_status; then
         return 1
     fi
-
-    # STEP 3: Apply the wallpaper
-    log "DEBUG" "Applying wallpaper: $CURRENT_WALLPAPER"
-    if hyprctl hyprpaper wallpaper ",$CURRENT_WALLPAPER" 2>/dev/null; then
-        log "INFO" "Wallpaper applied successfully"
+    
+    # Clear cache to prevent buffer issues
+    swww clear-cache 2>/dev/null || true
+    
+    # Load configuration from swww.conf
+    read_swww_config
+    
+    # Configurar transición - usar configuración del archivo o efecto suave por defecto
+    local transition_options=$(configure_transition "config")
+    
+    # Apply wallpaper with settings from config file
+    if swww img "$wallpaper_path" $transition_options 2>/dev/null; then
+        
+        log "INFO" "Wallpaper applied with transition effect"
         
         # Send notification
         if command -v notify-send &> /dev/null; then
@@ -244,7 +342,7 @@ apply_wallpaper() {
         
         return 0
     else
-    log "ERROR" "Error applying wallpaper"
+        log "ERROR" "Error applying wallpaper"
         return 1
     fi
 }
@@ -342,6 +440,57 @@ random_wallpaper() {
     apply_wallpaper "$selected_wallpaper"
 }
 
+# Show current SWWW configuration
+show_config() {
+    local config_file="$HOME/.config/swww/swww.conf"
+    
+    echo -e "${BLUE}🔧 SWWW Configuration${NC}"
+    
+    if [ -f "$config_file" ]; then
+        echo -e "  Config file: ${CYAN}$config_file${NC}"
+        echo ""
+        
+        read_swww_config
+        
+        echo -e "${YELLOW}Settings from config file:${NC}"
+        echo -e "  Transition Type: ${CYAN}$SWWW_TRANSITION_TYPE${NC}"
+        echo -e "  Transition Duration: ${CYAN}$SWWW_TRANSITION_DURATION${NC} seconds"
+        echo -e "  Transition FPS: ${CYAN}$SWWW_TRANSITION_FPS${NC}"
+        echo -e "  Transition Position: ${CYAN}$SWWW_TRANSITION_POS${NC}"
+        echo -e "  Resize Mode: ${CYAN}$SWWW_RESIZE${NC}"
+        
+        echo ""
+        echo -e "${YELLOW}Command that will be executed:${NC}"
+        local transition_options=$(configure_transition "config")
+        echo -e "  ${CYAN}swww img [wallpaper] $transition_options${NC}"
+        
+    else
+        echo -e "  ${YELLOW}⚠️  Config file not found: $config_file${NC}"
+        echo -e "  ${CYAN}Using default settings${NC}"
+    fi
+}
+
+# Test current wallpaper with configuration settings
+test_config() {
+    log "ACTION" "Testing wallpaper application with current config..."
+    
+    if [ -L "$CURRENT_WALLPAPER" ]; then
+        local real_path
+        real_path=$(readlink "$CURRENT_WALLPAPER")
+        
+        if [ -f "$real_path" ]; then
+            log "INFO" "Re-applying current wallpaper: $(basename "$real_path")"
+            apply_wallpaper "$real_path"
+        else
+            log "ERROR" "Current wallpaper file not found: $real_path"
+            return 1
+        fi
+    else
+        log "WARN" "No current wallpaper set. Using random wallpaper for test..."
+        random_wallpaper
+    fi
+}
+
 # Manually trigger cleanup of old wallpapers
 clean_wallpapers() {
     log "ACTION" "Cleaning old wallpapers..."
@@ -383,6 +532,27 @@ main() {
         "clean")
             setup_directories
             clean_wallpapers
+            ;;
+        "config")
+            show_config
+            ;;
+        "test")
+            check_dependencies
+            setup_directories
+            test_config
+            ;;
+        "restart")
+            log "ACTION" "Restarting swww daemon..."
+            swww kill 2>/dev/null || true
+            sleep 2
+            swww-daemon &
+            sleep 3
+            if swww query &>/dev/null; then
+                log "INFO" "Swww daemon restarted successfully"
+            else
+                log "ERROR" "Failed to restart swww daemon"
+                exit 1
+            fi
             ;;
         "-h"|"--help"|"help")
             show_help
