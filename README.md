@@ -15,8 +15,8 @@ Configuración personal para un escritorio moderno en Wayland con Hyprland. Incl
    ```bash
    sudo pacman -S --needed base-devel hyprland hyprlock hypridle hyprcursor waybar rofi dunst ghostty thunar playerctl grim slurp wf-recorder libnotify curl jq imagemagick noto-fonts-emoji noto-fonts ttf-jetbrains-mono-nerd ttf-nerd-fonts-symbols ttf-montserrat papirus-icon-theme zsh git curl
 
-   # swww is provided via AUR
-   yay -S swww
+   # Paquetes adicionales desde AUR
+   yay -S swww input-remapper-git
    ```
 
 ## 🚀 Instalación rápida
@@ -50,6 +50,7 @@ Cada componente tiene su propio README dentro de su carpeta:
 - Dunst: `config/dunst/`
 - Ghostty: `config/ghostty/`
 - SDDM: `config/sddm/`
+- Input Remapper: `config/input-remapper/`
 - Temas (GTK y sddm): `themes/`
 - Fuentes: `fonts/`
 - Iconos de cursor: `icons/`
@@ -66,7 +67,8 @@ dotfiles/
 │   ├── rofi/
 │   ├── dunst/
 │   ├── ghostty/
-│   └── sddm/
+│   ├── sddm/
+│   └── input-remapper/
 ├── fonts/
 ├── themes/
 ├── icons/
