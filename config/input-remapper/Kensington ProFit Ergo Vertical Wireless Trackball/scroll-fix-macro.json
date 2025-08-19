@@ -1,0 +1,40 @@
+[
+    {
+        "input_combination": [
+            {
+                "type": 2,
+                "code": 6,
+                "origin_hash": "306e5c7969b75cc46e88f0593479558e",
+                "analog_threshold": 1
+            },
+            {
+                "type": 2,
+                "code": 12,
+                "origin_hash": "306e5c7969b75cc46e88f0593479558e",
+                "analog_threshold": 1
+            }
+        ],
+        "target_uinput": "mouse",
+        "output_symbol": "wheel(down, 38)",
+        "mapping_type": "key_macro"
+    },
+    {
+        "input_combination": [
+            {
+                "type": 2,
+                "code": 6,
+                "origin_hash": "306e5c7969b75cc46e88f0593479558e",
+                "analog_threshold": -1
+            },
+            {
+                "type": 2,
+                "code": 12,
+                "origin_hash": "306e5c7969b75cc46e88f0593479558e",
+                "analog_threshold": -1
+            }
+        ],
+        "target_uinput": "mouse",
+        "output_symbol": "wheel(up, 38)",
+        "mapping_type": "key_macro"
+    }
+]
