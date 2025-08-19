@@ -11,7 +11,7 @@
         "output_type": 2,
         "output_code": 8,
         "mapping_type": "analog",
-        "gain": -1.0
+        "gain": -0.8
     },
     {
         "input_combination": [
@@ -25,6 +25,6 @@
         "output_type": 2,
         "output_code": 11,
         "mapping_type": "analog",
-        "gain": -1.0
+        "gain": -0.8
     }
 ]
