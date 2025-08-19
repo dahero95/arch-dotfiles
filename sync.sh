@@ -45,7 +45,7 @@ show_help() {
     echo "  -h                   Muestra esta ayuda"
     echo ""
     echo -e "${YELLOW}Componentes disponibles:${NC}"
-    echo "  hyprland, hypridle, hyprcursor, swww, waybar, rofi, dunst, ghostty, themes, fonts, icons"
+    echo "  hyprland, hypridle, hyprcursor, swww, waybar, rofi, dunst, ghostty, input-remapper, themes, fonts, icons"
     echo ""
     echo -e "${YELLOW}Ejemplos:${NC}"
     echo "  $0 -s hyprland       # Sincroniza solo Hyprland si hay cambios"
@@ -172,6 +172,28 @@ sync_face_icon() {
     fi
 }
 
+# Función para hacer ejecutables los scripts .sh
+make_scripts_executable() {
+    local target_dir="$1"
+
+    if [ -d "$target_dir" ]; then
+        # Usar find -print0 para soportar nombres con espacios y leer con -d ''
+        find "$target_dir" -name "*.sh" -type f -print0 2>/dev/null | while IFS= read -r -d '' script; do
+            if [ -z "$script" ]; then
+                continue
+            fi
+
+            # Si ya tiene permiso de ejecución, no hacer chmod
+            if [ -x "$script" ]; then
+                continue
+            else
+                chmod +x "$script"
+                log "DEBUG" "Permisos de ejecución dados a: $(basename "$script")"
+            fi
+        done
+    fi
+}
+
 # Función para copiar archivos
 sync_component() {
     local component="$1"
@@ -210,6 +232,9 @@ sync_component() {
     
     # Copiar archivos
     cp -r "$source_dir"/* "$target_dir/"
+    
+    # Hacer ejecutables los archivos .sh
+    make_scripts_executable "$target_dir"
     
     # Guardar firmas
     save_signatures "$component" "$source_dir"
@@ -354,6 +379,18 @@ post_sync_actions() {
         sddm)
             log "INFO" "SDDM configuración actualizada (reinicio requerido)"
             ;;
+        input-remapper)
+            log "ACTION" "Aplicando configuración input-remapper..."
+            # Reiniciar el servicio para aplicar nueva configuración
+            if command -v input-remapper-control &> /dev/null; then
+                input-remapper-control --command stop &>/dev/null || true
+                sleep 1
+                input-remapper-control --command start --preset "scroll-fix" --device "Kensington ProFit Ergo Vertical Wireless Trackball" &>/dev/null || true
+                log "INFO" "Input-remapper configuración aplicada"
+            else
+                log "WARN" "input-remapper no está instalado. Instalar con: yay -S input-remapper-git"
+            fi
+            ;;
     esac
 }
 
@@ -450,6 +487,10 @@ sync_sddm() {
     sync_face_icon
 }
 
+sync_input_remapper() {
+    sync_component "input-remapper" "$DOTFILES_DIR/config/input-remapper" "$CONFIG_DIR/input-remapper-2/presets" "Input Remapper"
+}
+
 # Función principal de sincronización
 sync_all() {
     log "INFO" "Iniciando sincronización completa..."
@@ -462,6 +503,7 @@ sync_all() {
     sync_rofi
     sync_dunst
     sync_ghostty
+    sync_input_remapper
     sync_themes
     sync_fonts
     sync_icons
@@ -513,13 +555,14 @@ if [ "$MODE_SYNC" = true ] && [ -n "$SPECIFIC_COMPONENT" ]; then
         rofi) sync_rofi ;;
         dunst) sync_dunst ;;
         ghostty) sync_ghostty ;;
+        input-remapper) sync_input_remapper ;;
         themes) sync_themes ;;
         fonts) sync_fonts ;;
         icons) sync_icons ;;
         sddm) sync_sddm ;;
         *)
             log "ERROR" "Componente desconocido: $SPECIFIC_COMPONENT"
-            echo "Componentes disponibles: hyprland, hypridle, hyprcursor, swww, hyprpaper (deprecated), waybar, rofi, dunst, ghostty, themes, fonts, icons, sddm"
+            echo "Componentes disponibles: hyprland, hypridle, hyprcursor, swww, hyprpaper (deprecated), waybar, rofi, dunst, ghostty, input-remapper, themes, fonts, icons, sddm"
             exit 1
             ;;
     esac
