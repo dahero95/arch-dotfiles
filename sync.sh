@@ -45,10 +45,11 @@ show_help() {
     echo "  -h                   Muestra esta ayuda"
     echo ""
     echo -e "${YELLOW}Componentes disponibles:${NC}"
-    echo "  hyprland, hypridle, hyprcursor, swww, waybar, rofi, dunst, ghostty, input-remapper, themes, fonts, icons"
+    echo "  hyprland, hypridle, hyprcursor, swww, waybar, rofi, dunst, ghostty, input-remapper, chat, themes, fonts, icons"
     echo ""
     echo -e "${YELLOW}Ejemplos:${NC}"
     echo "  $0 -s hyprland       # Sincroniza solo Hyprland si hay cambios"
+    echo "  $0 -s chat           # Sincroniza la aplicación de chat"
     echo "  $0 -a                # Sincroniza todo lo que cambió"
     echo "  $0 -r                # Reemplaza toda la configuración"
     echo "  $0 -s themes -r      # Reemplaza completamente los temas"
@@ -391,6 +392,9 @@ post_sync_actions() {
                 log "WARN" "input-remapper no está instalado. Instalar con: yay -S input-remapper-git"
             fi
             ;;
+        chat)
+            log "INFO" "Chat instalado y disponible como comando: chat-popup"
+            ;;
     esac
 }
 
@@ -431,6 +435,48 @@ sync_dunst() {
 
 sync_ghostty() {
     sync_component "ghostty" "$DOTFILES_DIR/config/ghostty" "$CONFIG_DIR/ghostty" "Ghostty"
+}
+
+sync_chat() {
+    local component="chat"
+    local source_dir="$DOTFILES_DIR/chat"
+    
+    if [ ! -d "$source_dir" ]; then
+        log "WARN" "Chat: directorio fuente no encontrado"
+        return 1
+    fi
+    
+    local changes_detected=$(has_changes "$component" "$source_dir")
+    
+    if [ "$changes_detected" = "false" ]; then
+        log "INFO" "Aplicación de Chat: sin cambios"
+        return 0
+    fi
+    
+    log "ACTION" "Instalando aplicación de Chat..."
+    
+    # Verificar que el instalador existe
+    if [ ! -f "$source_dir/install.sh" ]; then
+        log "ERROR" "Instalador de chat no encontrado: $source_dir/install.sh"
+        return 1
+    fi
+    
+    # Ejecutar el instalador del chat
+    log "ACTION" "Ejecutando instalador de chat..."
+    if "$source_dir/install.sh" --force; then
+        log "INFO" "Chat instalado exitosamente"
+    else
+        log "ERROR" "Error ejecutando instalador de chat"
+        return 1
+    fi
+    
+    # Guardar firmas
+    save_signatures "$component" "$source_dir"
+    
+    # Ejecutar acciones post-sync
+    post_sync_actions "$component"
+    
+    return 0
 }
 
 sync_themes() {
@@ -503,6 +549,7 @@ sync_all() {
     sync_rofi
     sync_dunst
     sync_ghostty
+    sync_chat
     sync_input_remapper
     sync_themes
     sync_fonts
@@ -555,6 +602,7 @@ if [ "$MODE_SYNC" = true ] && [ -n "$SPECIFIC_COMPONENT" ]; then
         rofi) sync_rofi ;;
         dunst) sync_dunst ;;
         ghostty) sync_ghostty ;;
+        chat) sync_chat ;;
         input-remapper) sync_input_remapper ;;
         themes) sync_themes ;;
         fonts) sync_fonts ;;
@@ -562,7 +610,7 @@ if [ "$MODE_SYNC" = true ] && [ -n "$SPECIFIC_COMPONENT" ]; then
         sddm) sync_sddm ;;
         *)
             log "ERROR" "Componente desconocido: $SPECIFIC_COMPONENT"
-            echo "Componentes disponibles: hyprland, hypridle, hyprcursor, swww, hyprpaper (deprecated), waybar, rofi, dunst, ghostty, input-remapper, themes, fonts, icons, sddm"
+            echo "Componentes disponibles: hyprland, hypridle, hyprcursor, swww, hyprpaper (deprecated), waybar, rofi, dunst, ghostty, chat, input-remapper, themes, fonts, icons, sddm"
             exit 1
             ;;
     esac
